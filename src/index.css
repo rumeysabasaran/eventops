@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-[#f8fafc] text-[#0f172a] font-sans antialiased;
+  font-feature-settings: 'cv11', 'ss01';
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+@layer components {
+  .card {
+    @apply rounded-card border border-[#e2e8f0] bg-white shadow-card transition-all duration-150;
+  }
+  .card-hover {
+    @apply hover:border-slate-300 hover:shadow-card-hover hover:bg-white;
+  }
+  .label-xs {
+    @apply text-[11px] font-semibold uppercase tracking-[0.05em] text-[#64748b];
+  }
+  .select-corp {
+    @apply h-8 rounded-input border border-[#e2e8f0] bg-white px-2.5 pr-7 text-[12.5px] font-medium text-[#0f172a] outline-none transition-colors hover:border-slate-300 focus:border-[#10b981] appearance-none bg-no-repeat cursor-pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-position: right 8px center;
+  }
+  .input-corp {
+    @apply h-8 rounded-input border border-[#e2e8f0] bg-white px-2.5 text-[12.5px] text-[#0f172a] outline-none transition-colors placeholder:text-[#94a3b8] hover:border-slate-300 focus:border-[#10b981];
+  }
+  .btn-secondary {
+    @apply flex h-8 items-center gap-1.5 rounded-input border border-[#e2e8f0] bg-white px-3 text-[12px] font-medium text-[#334155] transition-all hover:border-slate-300 hover:bg-slate-50;
+  }
+  .btn-primary {
+    @apply flex h-8 items-center gap-1.5 rounded-input bg-[#10b981] px-3.5 text-[12px] font-semibold text-white shadow-sm transition-all hover:bg-[#059669] active:scale-[0.98];
+  }
+}
+
+.leaflet-container {
+  @apply bg-slate-100 font-sans;
+}
+.leaflet-popup-content-wrapper {
+  @apply rounded-card border border-[#e2e8f0] bg-white text-[#0f172a] shadow-dropdown;
+  padding: 0;
+}
+.leaflet-popup-content {
+  margin: 0;
+  min-width: 250px;
+}
+.leaflet-popup-tip {
+  @apply border border-[#e2e8f0] bg-white;
+}
+.leaflet-popup-close-button {
+  color: #64748b !important;
+  font-size: 16px !important;
+  padding: 6px 8px 0 0 !important;
+}
+.leaflet-control-zoom a {
+  @apply !border-[#e2e8f0] !bg-white !text-[#334155];
+}
+.leaflet-control-zoom a:hover {
+  @apply !bg-slate-50 !text-[#0f172a];
+}
+.leaflet-control-attribution {
+  @apply !bg-white/90 !text-[#64748b];
+  font-size: 10px !important;
+}
+.leaflet-control-attribution a {
+  @apply !text-[#10b981];
+}
