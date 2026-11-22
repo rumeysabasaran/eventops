@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 330" role="img" aria-label="EventOps veri akışı: kamuya açık kaynaklar, veri toplama, işleme, SQLite, API ve web arayüzü">
+  <style>
+    .t{font:700 15px Inter,Segoe UI,Arial,sans-serif;fill:#0f172a}
+    .s{font:400 12px Inter,Segoe UI,Arial,sans-serif;fill:#475569}
+    .h{font:700 12px Inter,Segoe UI,Arial,sans-serif;fill:#047857;letter-spacing:.06em}
+    .b{fill:#fff;stroke:#cbd5e1;stroke-width:1.5}
+    .g{fill:#ecfdf5;stroke:#10b981;stroke-width:1.5}
+    .a{stroke:#10b981;stroke-width:2;fill:none;marker-end:url(#m)}
+  </style>
+  <defs><marker id="m" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="#10b981"/></marker></defs>
+  <rect width="1120" height="330" rx="14" fill="#f8fafc"/>
+  <text class="h" x="32" y="42">TOPLAMA</text><text class="h" x="400" y="42">İŞLEME</text><text class="h" x="800" y="42">SUNUM</text>
+
+  <rect class="b" x="32" y="60" width="150" height="220" rx="10"/>
+  <text class="t" x="48" y="92">Kaynaklar</text>
+  <text class="s" x="48" y="122">Belediyeler</text><text class="s" x="48" y="146">Bilet platformu</text><text class="s" x="48" y="170">Spor federasyonu</text><text class="s" x="48" y="194">Mekân takvimleri</text><text class="s" x="48" y="218">Organizatörler</text><text class="s" x="48" y="242">Yerel rehberler</text>
+
+  <rect class="b" x="218" y="60" width="150" height="220" rx="10"/>
+  <text class="t" x="234" y="92">Adaptörler</text>
+  <text class="s" x="234" y="122">Kaynak kaydı</text><text class="s" x="234" y="146">Zamanlayıcı</text><text class="s" x="234" y="170">robots.txt kontrolü</text><text class="s" x="234" y="194">Hata kaydı</text><text class="s" x="234" y="218">Ham veri arşivi</text>
+
+  <rect class="g" x="404" y="60" width="170" height="220" rx="10"/>
+  <text class="t" x="420" y="92">Veri hattı</text>
+  <text class="s" x="420" y="122">Türkçe tarih ayrıştırma</text><text class="s" x="420" y="146">Normalizasyon</text><text class="s" x="420" y="170">Doğrulama</text><text class="s" x="420" y="194">Tekilleştirme</text><text class="s" x="420" y="218">İptal / değişiklik takibi</text><text class="s" x="420" y="242">Konum eşleştirme</text>
+
+  <rect class="b" x="610" y="60" width="150" height="220" rx="10"/>
+  <text class="t" x="626" y="92">SQLite</text>
+  <text class="s" x="626" y="122">Etkinlikler</text><text class="s" x="626" y="146">Kaynak ilişkileri</text><text class="s" x="626" y="170">Değişiklik geçmişi</text><text class="s" x="626" y="194">Çalışma kayıtları</text><text class="s" x="626" y="218">Konum önbelleği</text>
+
+  <rect class="b" x="796" y="60" width="130" height="220" rx="10"/>
+  <text class="t" x="812" y="92">REST API</text>
+  <text class="s" x="812" y="122">Node.js</text><text class="s" x="812" y="146">Express 5</text><text class="s" x="812" y="170">Filtreleme</text>
+
+  <rect class="g" x="962" y="60" width="130" height="220" rx="10"/>
+  <text class="t" x="978" y="92">Web paneli</text>
+  <text class="s" x="978" y="122">React 19</text><text class="s" x="978" y="146">TypeScript</text><text class="s" x="978" y="170">Öncelik skoru</text><text class="s" x="978" y="194">Harita</text><text class="s" x="978" y="218">Aksiyon önerisi</text>
+
+  <path class="a" d="M182 170H216"/><path class="a" d="M368 170H402"/><path class="a" d="M574 170H608"/><path class="a" d="M760 170H794"/><path class="a" d="M926 170H960"/>
+</svg>
