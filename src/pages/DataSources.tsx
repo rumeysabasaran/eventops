@@ -1,4 +1,4 @@
-import { Database, CheckCircle2, AlertTriangle, PlusCircle, Layers } from 'lucide-react'
+import { Database, CheckCircle2, AlertTriangle, Layers } from 'lucide-react'
 import { useData } from '../context/DataContext'
 import { formatNumber, timeAgo } from '../lib/format'
 import { PageHeader, KpiCard, StatusDot } from '../components/ui'
@@ -13,21 +13,16 @@ export default function DataSources() {
   return (
     <div>
       <PageHeader
-        title="Veri Kaynakları & Entegrasyonlar"
-        subtitle="Modüler şehir tarayıcı adaptörleri ve veri hattı durumu"
-        actions={
-          <button className="btn-primary">
-            <PlusCircle size={14} /> Yeni Kaynak Bağla
-          </button>
-        }
+        title="Veri Kaynakları"
+        subtitle="Takip edilen kaynaklar ve son çalışma durumları"
       />
 
       <div className="mx-auto max-w-[1440px] px-6 py-4 space-y-4">
         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
-          <KpiCard label="Bağlı Kaynaklar" value={String(DATA_SOURCES.length)} hint={`${active.length} aktif toplayıcı`} icon={<Database size={16} />} />
-          <KpiCard label="Sağlıklı Hat" value={String(active.length)} hint="Kesintisiz akış" accent="#0d9488" icon={<CheckCircle2 size={16} />} />
-          <KpiCard label="İnceleme Gereken" value={String(failing.length)} hint="Müdahale bekleniyor" accent="#d97706" icon={<AlertTriangle size={16} />} />
-          <KpiCard label="Toplanan Veri" value={formatNumber(totalEvents)} hint={`Son 24 saatte +${newToday}`} accent="#0284c7" icon={<Layers size={16} />} />
+          <KpiCard label="Toplam Kaynak" value={String(DATA_SOURCES.length)} hint={`${active.length} aktif`} icon={<Database size={16} />} />
+          <KpiCard label="Çalışan Kaynak" value={String(active.length)} hint="Son çalıştırma başarılı" accent="#0d9488" icon={<CheckCircle2 size={16} />} />
+          <KpiCard label="İnceleme Gereken" value={String(failing.length)} hint="Hata veya erişim sorunu" accent="#d97706" icon={<AlertTriangle size={16} />} />
+          <KpiCard label="Toplam Kayıt" value={formatNumber(totalEvents)} hint={`Son 24 saatte +${newToday}`} accent="#0284c7" icon={<Layers size={16} />} />
         </div>
 
         <div className="grid grid-cols-1 gap-3.5 pb-6 md:grid-cols-2 xl:grid-cols-3">
@@ -58,17 +53,17 @@ export default function DataSources() {
 
               <div className="mt-3 space-y-1.5 text-[11.5px]">
                 <div className="flex items-center justify-between">
-                  <span className="text-text-muted">Son Senkronizasyon</span>
+                  <span className="text-text-muted">Son Çalışma</span>
                   <span className="font-medium text-corp">
                     {s.lastRun ? timeAgo(s.lastRun) : 'Hiç'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-text-muted">Çalışma Periyodu</span>
+                  <span className="text-text-muted">Sıklık</span>
                   <span className="font-medium text-corp">{s.interval}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-text-muted">Güvenilirlik Oranı</span>
+                  <span className="text-text-muted">Başarı Oranı</span>
                   <span className={`font-mono font-bold ${s.reliability >= 95 ? 'text-brand' : s.reliability >= 90 ? 'text-amber-600' : 'text-rose-600'}`}>
                     %{s.reliability.toFixed(1)}
                   </span>

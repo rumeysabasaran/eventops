@@ -28,10 +28,10 @@ export default function ScraperMonitoring() {
   return (
     <div>
       <PageHeader
-        title="Tarayıcı & Veri Hattı İzleme"
-        subtitle="Sistem çalışma kayıtları ve anlık veri akış performansı"
+        title="Çalışma Kayıtları"
+        subtitle="Veri toplama görevlerinin geçmişi"
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <select value={status} onChange={(e) => setStatus(e.target.value as StatusFilter)} className="select-corp">
               <option value="all">Tüm Durumlar</option>
               <option value="success">Başarılı</option>
@@ -52,10 +52,10 @@ export default function ScraperMonitoring() {
 
       <div className="mx-auto max-w-[1440px] px-6 py-4 space-y-4">
         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
-          <KpiCard label="Toplam Görev" value={String(SCRAPER_RUNS.length)} hint="Bağdaştırıcı döngüsü" icon={<Activity size={16} />} />
+          <KpiCard label="Toplam Görev" value={String(SCRAPER_RUNS.length)} hint="Son çalıştırmalar" icon={<Activity size={16} />} />
           <KpiCard label="Başarı Oranı" value={`%${successRate}`} hint={`${succeeded} sorunsuz tamamlandı`} accent="#0d9488" icon={<CheckCircle2 size={16} />} />
-          <KpiCard label="Hata / Uyarı" value={String(failed)} hint="Otomatik tekrar devrede" accent="#d97706" icon={<XCircle size={16} />} />
-          <KpiCard label="Ortalama Süre" value={`${avgDuration}s`} hint="Görev başına işlem" icon={<Timer size={16} />} />
+          <KpiCard label="Başarısız" value={String(failed)} hint="Son çalıştırmalarda" accent="#d97706" icon={<XCircle size={16} />} />
+          <KpiCard label="Ortalama Süre" value={`${avgDuration}s`} hint="Görev başına" icon={<Timer size={16} />} />
         </div>
 
         <div className="card overflow-hidden">

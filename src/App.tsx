@@ -4,7 +4,7 @@ import Layout from './components/Layout'
 import Dashboard from './pages/Dashboard'
 import Events from './pages/Events'
 import EventDetail from './pages/EventDetail'
-import CityIntelligence from './pages/CityIntelligence'
+import CityReport from './pages/CityReport'
 import MapPage from './pages/MapPage'
 import Opportunities from './pages/Opportunities'
 import DataSources from './pages/DataSources'
@@ -19,7 +19,7 @@ export default function App() {
           <Route index element={<Dashboard />} />
           <Route path="events" element={<Events />} />
           <Route path="events/:id" element={<EventDetail />} />
-          <Route path="city-intelligence" element={<CityIntelligence />} />
+          <Route path="city-report" element={<CityReport />} />
           <Route path="map" element={<MapPage />} />
           <Route path="parking-opportunities" element={<Opportunities service="parking" />} />
           <Route path="scooter-opportunities" element={<Opportunities service="scooter" />} />

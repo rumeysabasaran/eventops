@@ -77,7 +77,7 @@ export default function EventListItem({ event }: { event: CityEvent }) {
             <ImpactBadge level={event.parkingImpact} prefix="Otopark" />
           </div>
           <div className="flex w-20 flex-col items-end gap-0.5">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#94a3b8]">Etki</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#94a3b8]">Öncelik</span>
             <ScorePill score={event.impactScore} />
           </div>
           <span className="hidden w-20 text-right text-[11px] font-semibold text-[#64748b] md:block">

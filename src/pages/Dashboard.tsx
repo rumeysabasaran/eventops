@@ -23,7 +23,9 @@ import { useData } from '../context/DataContext'
 import { CITIES } from '../data/cities'
 import type { ServiceType } from '../types'
 import { scoreToLevel, LEVEL_COLOR, LEVEL_ORDER, LEVEL_LABEL } from '../lib/impact'
-import { daysUntil, formatDate, formatAttendance, relativeDay } from '../lib/format'
+import { daysUntil, formatDate, formatAttendance, istanbulDay, relativeDay } from '../lib/format'
+import { resolveEventLocation } from '../lib/mapLocation'
+import { UNAVAILABLE } from '../lib/labels'
 import { PageHeader, KpiCard, ImpactBadge, ScoreRing, CHART_TOOLTIP, CHART_GRID, CHART_AXIS } from '../components/ui'
 import EventListItem from '../components/EventListItem'
 
@@ -67,8 +69,7 @@ export default function Dashboard() {
   const timeline = useMemo(() => {
     const days: { day: string; iso: string; low: number; medium: number; high: number; critical: number }[] = []
     for (let i = 0; i < 30; i++) {
-      const dt = new Date()
-      dt.setDate(dt.getDate() + i)
+      const dt = istanbulDay(i)
       const iso = dt.toISOString().slice(0, 10)
       days.push({
         day: dt.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }),
@@ -87,7 +88,12 @@ export default function Dashboard() {
   }, [events])
 
   const topHighImpact = useMemo(() => {
-    return [...highImpact].sort((a, b) => b.impactScore - a.impactScore)
+    // Önce aksiyon alınabilir olanlar: konumu doğrulanmış ve önümüzdeki 30 gün içinde.
+    const actionable = (e: (typeof highImpact)[number]) =>
+      e.eventStatus !== 'cancelled' && e.venue !== UNAVAILABLE && resolveEventLocation(e) !== null && daysUntil(e.date) <= 30
+    return [...highImpact].sort(
+      (a, b) => Number(actionable(b)) - Number(actionable(a)) || b.impactScore - a.impactScore,
+    )
   }, [highImpact])
 
   const cityOptions = service === 'all' ? CITIES : CITIES.filter((c) => c.services.includes(service))
@@ -95,12 +101,12 @@ export default function Dashboard() {
 
   return (
     <div>
-      {/* Üst Başlık ve Filtreler: "Operasyon Yönetim Paneli" */}
+      {/* Üst başlık ve filtreler */}
       <PageHeader
-        title="Operasyon Yönetim Paneli"
+        title="Genel Bakış"
         subtitle={`${cityOptions.length} şehir takip ediliyor · Toplam ${events.length} doğrulanmış etkinlik`}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <select
               value={service}
               onChange={(e) => {
@@ -131,39 +137,39 @@ export default function Dashboard() {
           <KpiCard
             label="Yaklaşan Etkinlikler"
             value={String(events.length)}
-            hint={`${highImpact.length} tanesi yüksek operasyonel etkili`}
+            hint={`${highImpact.length} tanesi yüksek öncelikli`}
             icon={<CalendarDays size={18} />}
           />
           <KpiCard
             label="Bu Hafta (7 Gün)"
             value={String(thisWeek.length)}
-            hint="Saha ekibi hazırlığı için yakın tarihli"
+            hint="Yakın tarihli etkinlikler"
             icon={<CalendarRange size={18} />}
           />
           <KpiCard
-            label="Scooter Talebi"
+            label="Scooter Planı"
             value={String(scooterOpps.length)}
-            hint="Filo kaydırma ve şarj aksiyonu"
+            hint="Filo kaydırma gerektirebilir"
             icon={<Zap size={18} />}
           />
           <KpiCard
-            label="Otopark Fırsatları"
+            label="Otopark Planı"
             value={String(parkingOpps.length)}
-            hint="Otopark kapasite talebi beklenen"
+            hint="Kapasite planı gerektirebilir"
             icon={<SquareParking size={18} />}
           />
         </div>
 
-        {/* Orta Bölüm: 30 Günlük Yoğunluk Grafiği & Öne Çıkan Operasyon Kartı */}
+        {/* Orta bölüm: 30 günlük yoğunluk ve sıradaki öncelikli etkinlik */}
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
           {/* Grafik (8 Kolon): Monokromatik Yeşil & Antrasit Palet */}
-          <div className="card p-5 xl:col-span-8">
+          <div className="card min-w-0 p-5 xl:col-span-8">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-[#e2e8f0] pb-3">
               <div>
                 <h2 className="text-[14px] font-bold text-[#0f172a]">30 Günlük Etkinlik Yoğunluğu</h2>
-                <p className="text-[12px] text-[#64748b]">Gün bazında etkinliklerin etki düzeyine göre dağılımı</p>
+                <p className="text-[12px] text-[#64748b]">Gün bazında etkinliklerin öncelik düzeyine göre dağılımı</p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 {(['critical', 'high', 'medium', 'low'] as const).map((l) => (
                   <span key={l} className="flex items-center gap-1.5 text-[11px] font-medium text-[#475569]">
                     <span className="h-2 w-2 rounded-sm" style={{ background: LEVEL_COLOR[l] }} />
@@ -206,10 +212,10 @@ export default function Dashboard() {
           </div>
 
           {/* Günün Öncelikli Etkinliği (4 Kolon) */}
-          <div className="card flex flex-col p-5 xl:col-span-4">
+          <div className="card flex min-w-0 flex-col p-5 xl:col-span-4">
             <div className="mb-3 flex items-center justify-between border-b border-[#e2e8f0] pb-2.5">
               <span className="flex items-center gap-1.5 text-[12px] font-bold text-[#0f172a]">
-                <Sparkles size={14} className="text-[#10b981]" /> Günün Öncelikli Etkinliği
+                <Sparkles size={14} className="text-[#10b981]" /> Sıradaki Öncelikli Etkinlik
               </span>
               {featuredEvent && <ImpactBadge level={scoreToLevel(featuredEvent.impactScore)} />}
             </div>
@@ -218,7 +224,7 @@ export default function Dashboard() {
               <div className="flex flex-1 flex-col justify-between">
                 <div>
                   <div className="mt-1 flex items-start justify-between gap-3">
-                    <div>
+                    <div className="min-w-0">
                       <Link
                         to={`/events/${featuredEvent.id}`}
                         className="text-[14.5px] font-bold leading-snug text-[#0f172a] hover:text-[#10b981] transition-colors"
@@ -231,7 +237,7 @@ export default function Dashboard() {
                       </div>
                       <div className="mt-1 flex items-center gap-1.5 text-[12px] font-medium text-[#0f172a]">
                         <Clock size={13} className="shrink-0 text-[#64748b]" />
-                        <span>{relativeDay(featuredEvent.date)} · {formatDate(featuredEvent.date)} · {featuredEvent.startTime}</span>
+                        <span>{relativeDay(featuredEvent.date)} · {formatDate(featuredEvent.date)}{featuredEvent.startTime !== '—' ? ` · ${featuredEvent.startTime}` : ''}</span>
                       </div>
                     </div>
                     <div className="shrink-0">
@@ -239,7 +245,7 @@ export default function Dashboard() {
                     </div>
                   </div>
 
-                  {/* Operasyonel Parametreler */}
+                  {/* Hizmet düzeyleri */}
                   <div className="mt-4 space-y-2 rounded-lg border border-[#e2e8f0] bg-[#f8fafc] p-3 text-[12px]">
                     {featuredEvent.attendance !== null && (
                       <div className="flex items-center justify-between">
@@ -250,23 +256,23 @@ export default function Dashboard() {
                       </div>
                     )}
                     <div className="flex items-center justify-between">
-                      <span className="text-[#64748b]">Scooter Talebi:</span>
+                      <span className="text-[#64748b]">Scooter:</span>
                       <ImpactBadge level={featuredEvent.scooterDemand} />
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-[#64748b]">Otopark Aksiyonu:</span>
+                      <span className="text-[#64748b]">Otopark:</span>
                       <ImpactBadge level={featuredEvent.parkingImpact} />
                     </div>
                   </div>
                 </div>
 
-                {/* Birincil yeşil Birincil Aksiyon Butonu */}
+                {/* Birincil aksiyon butonu */}
                 <div className="mt-4 pt-2">
                   <Link
-                    to={`/events/${featuredEvent.id}`}
+                    to="/map"
                     className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#10b981] px-4 py-2.5 text-[12.5px] font-semibold text-white shadow-sm transition-all hover:bg-[#059669] active:scale-[0.99]"
                   >
-                    <span>Etkinlik Detayını & Aksiyon Planını Gör</span>
+                    <span>Haritada Aç</span>
                     <ChevronRight size={15} />
                   </Link>
                 </div>
@@ -279,10 +285,10 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Alt Bölüm: Sekmeli Operasyonel Etkinlik Tablosu */}
+        {/* Sekmeli etkinlik listesi */}
         <div className="card p-5">
           <div className="mb-3.5 flex flex-wrap items-center justify-between gap-3 border-b border-[#e2e8f0] pb-3.5">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               {/* Aktif sekme: Koyu antrasit (#0F172A) zemin ve beyaz metin */}
               <button
                 onClick={() => setActiveTab('highImpact')}
@@ -292,7 +298,7 @@ export default function Dashboard() {
                     : 'bg-[#f1f5f9] text-[#64748b] hover:text-[#0f172a] hover:bg-slate-200'
                 }`}
               >
-                Kritik Operasyonel Etkinlikler ({highImpact.length})
+                Öncelikli Etkinlikler ({highImpact.length})
               </button>
               <button
                 onClick={() => setActiveTab('upcoming')}

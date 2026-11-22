@@ -14,16 +14,16 @@ const SERVICE_META: Record<
   { title: string; subtitle: string; levelLabel: string; icon: React.ReactNode; accent: string }
 > = {
   scooter: {
-    title: 'Scooter / Mikromobilite Fırsatları',
-    subtitle: 'Filo yönlendirmesi ve batarya operasyonu gerektirebilecek yüksek talep etkinlikleri',
-    levelLabel: 'Scooter Talebi',
+    title: 'Scooter Planı',
+    subtitle: 'Filo yönlendirmesi gerektirebilecek etkinlikler',
+    levelLabel: 'Scooter Önceliği',
     icon: <Zap size={16} />,
     accent: '#10b981',
   },
   parking: {
-    title: 'Otopark Operasyonel Fırsatları',
-    subtitle: 'Yönetilen otopark lokasyonlarında talep artışı yaratması beklenen etkinlikler',
-    levelLabel: 'Otopark Etkisi',
+    title: 'Otopark Planı',
+    subtitle: 'Otopark doluluğunu artırabilecek etkinlikler',
+    levelLabel: 'Otopark Önceliği',
     icon: <SquareParking size={16} />,
     accent: '#064e3b',
   },
@@ -62,21 +62,21 @@ export default function Opportunities({ service }: { service: ServiceType }) {
     <div>
       <PageHeader
         title={meta.title}
-        subtitle={`${meta.subtitle} · Faaliyet: ${serviceCities.map((c) => c.name).join(', ')}`}
+        subtitle={`${meta.subtitle} · Şehirler: ${serviceCities.map((c) => c.name).join(', ')}`}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <select
               value={minLevel}
               onChange={(e) => setMinLevel(e.target.value as ImpactLevel)}
               className="select-corp"
             >
-              <option value="low">Tüm Talep Düzeyleri</option>
-              <option value="medium">Orta ve Üzeri Talep</option>
-              <option value="high">Yüksek ve Üzeri Talep</option>
-              <option value="critical">Yalnızca Kritik Talep</option>
+              <option value="low">Tüm Öncelikler</option>
+              <option value="medium">Orta ve Üzeri</option>
+              <option value="high">Yüksek ve Üzeri</option>
+              <option value="critical">Yalnızca Çok Yüksek</option>
             </select>
             <select value={city} onChange={(e) => setCity(e.target.value)} className="select-corp">
-              <option value="all">Tüm Hizmet Şehirleri</option>
+              <option value="all">Tüm Şehirler</option>
               {serviceCities.map((c) => (
                 <option key={c.id} value={c.name}>
                   {c.name}
@@ -91,15 +91,15 @@ export default function Opportunities({ service }: { service: ServiceType }) {
         {/* KPI Özeti */}
         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
           <KpiCard
-            label="Tespit Edilen Fırsatlar"
+            label="Planlanacak Etkinlik"
             value={String(rows.length)}
-            hint={`${serviceCities.length} şehirde aktif`}
+            hint={`${serviceCities.length} şehirde`}
             icon={<TrendingUp size={16} />}
           />
           <KpiCard
-            label="Kritik Düzey Talep"
+            label="Çok Yüksek Öncelik"
             value={String(critical)}
-            hint="Öncelikli saha hazırlığı"
+            hint="Önce planlanmalı"
             accent="#0d9488"
             icon={meta.icon}
           />
@@ -112,7 +112,7 @@ export default function Opportunities({ service }: { service: ServiceType }) {
           <KpiCard
             label="Biletli Etkinlik"
             value={String(ticketedCount)}
-            hint="Doğrulanmış gişe talebi"
+            hint="Bilet bağlantısı bulunan"
             accent={meta.accent}
             icon={<Ticket size={16} />}
           />
@@ -120,7 +120,7 @@ export default function Opportunities({ service }: { service: ServiceType }) {
 
         {/* Tablo */}
         {rows.length === 0 ? (
-          <EmptyState title="Filtrelere uygun operasyonel fırsat bulunamadı" hint="Lütfen minimum talep eşiğini düşürün veya şehir seçimini değiştirin." />
+          <EmptyState title="Filtrelere uygun etkinlik yok" hint="Öncelik filtresini veya şehir seçimini değiştirin." />
         ) : (
           <div className="card overflow-hidden">
             <div className="overflow-x-auto">
@@ -132,8 +132,8 @@ export default function Opportunities({ service }: { service: ServiceType }) {
                     <th className="label-xs px-3 py-2.5">Tarih / Saat</th>
                     {showAttendance && <th className="label-xs px-3 py-2.5 text-right">Beklenen Katılım</th>}
                     <th className="label-xs px-3 py-2.5">{meta.levelLabel}</th>
-                    <th className="label-xs px-3 py-2.5 text-right">Fırsat Skoru</th>
-                    <th className="label-xs px-4 py-2.5">Önerilen Saha Aksiyonu</th>
+                    <th className="label-xs px-3 py-2.5 text-right">Skor</th>
+                    <th className="label-xs px-4 py-2.5">Önerilen Aksiyon</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">

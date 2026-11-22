@@ -24,14 +24,14 @@ import {
 import { useData } from '../context/DataContext'
 import { CITIES } from '../data/cities'
 import { LEVEL_ORDER, opportunityScore, LEVEL_COLOR, scoreToLevel } from '../lib/impact'
-import { formatAttendance, daysUntil, formatDate } from '../lib/format'
+import { formatAttendance, daysUntil, formatDate, istanbulDay } from '../lib/format'
 import { PageHeader, KpiCard, ImpactBadge, CHART_TOOLTIP, CHART_GRID, CHART_AXIS } from '../components/ui'
 import { CategoryBadge } from '../components/EventListItem'
 import { categoryLabel, UNAVAILABLE } from '../lib/labels'
 
 const CAT_COLORS = ['#10b981', '#064e3b', '#047857', '#0f172a', '#334155', '#6ee7b7', '#475569', '#059669', '#94a3b8']
 
-export default function CityIntelligence() {
+export default function CityReport() {
   const { events: allEvents } = useData()
   const [cityName, setCityName] = useState('Bursa')
   const city = CITIES.find((c) => c.name === cityName)!
@@ -63,8 +63,7 @@ export default function CityIntelligence() {
   const density = useMemo(() => {
     const days: { day: string; iso: string; events: number; attendance: number }[] = []
     for (let i = 0; i < 30; i++) {
-      const dt = new Date()
-      dt.setDate(dt.getDate() + i)
+      const dt = istanbulDay(i)
       days.push({
         day: dt.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }),
         iso: dt.toISOString().slice(0, 10),
@@ -108,8 +107,8 @@ export default function CityIntelligence() {
   return (
     <div>
       <PageHeader
-        title="Şehir Zekâsı Analitiği"
-        subtitle="Seçili şehir özelinde etkinlik ve talep yoğunluğu"
+        title="Şehir Raporu"
+        subtitle="Seçili şehirde etkinlik yoğunluğu ve mekân dağılımı"
         actions={
           <select value={cityName} onChange={(e) => setCityName(e.target.value)} className="select-corp">
             {CITIES.map((c) => (
@@ -141,36 +140,36 @@ export default function CityIntelligence() {
               </div>
             </div>
             <p className="mt-0.5 text-[12px] text-text-muted">
-              Nüfus {city.population} · Önümüzdeki 30 günde toplam {events.length} doğrulanmış etkinlik
+              Nüfus {city.population} · {events.length} yaklaşan doğrulanmış etkinlik
             </p>
           </div>
           <Link to="/map" className="btn-secondary">
-            <MapPin size={13} className="text-brand" /> Şehir Haritasını Aç
+            <MapPin size={13} className="text-brand" /> Haritada Gör
           </Link>
         </div>
 
         {/* KPI Grid */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
           <KpiCard label="Yaklaşan Etkinlik" value={String(events.length)} hint="Kayıtlı toplam" icon={<CalendarDays size={14} />} />
-          <KpiCard label="Yüksek Etki" value={String(highImpact.length)} hint="Öncelikli takip" accent="#0d9488" icon={<Flame size={14} />} />
+          <KpiCard label="Yüksek Öncelik" value={String(highImpact.length)} hint="Öncelikli takip" accent="#0d9488" icon={<Flame size={14} />} />
           <KpiCard
             label="Biletli Etkinlik"
             value={String(ticketedCount)}
-            hint="Doğrulanmış gişe"
+            hint="Bilet bağlantısı bulunan"
             icon={<Ticket size={14} />}
           />
-          <KpiCard label="En Yoğun Hafta" value={String(busiestWeekCount)} hint="7 günlük pik" icon={<Gauge size={14} />} />
+          <KpiCard label="En Yoğun Hafta" value={String(busiestWeekCount)} hint="7 günlük en yüksek" icon={<Gauge size={14} />} />
           <KpiCard
-            label="Otopark Fırsatı"
+            label="Otopark Planı"
             value={city.services.includes('parking') ? String(parkingOpps.length) : '—'}
-            hint={city.services.includes('parking') ? 'Yüksek talep' : 'Hizmet yok'}
+            hint={city.services.includes('parking') ? 'Yüksek öncelikli' : 'Hizmet yok'}
             accent="#0f766e"
             icon={<SquareParking size={14} />}
           />
           <KpiCard
-            label="Scooter Fırsatı"
+            label="Scooter Planı"
             value={city.services.includes('scooter') ? String(scooterOpps.length) : '—'}
-            hint={city.services.includes('scooter') ? 'Filo kaydırma' : 'Hizmet yok'}
+            hint={city.services.includes('scooter') ? 'Yüksek öncelikli' : 'Hizmet yok'}
             accent="#0284c7"
             icon={<Zap size={14} />}
           />
@@ -179,7 +178,7 @@ export default function CityIntelligence() {
         {/* Grafikler */}
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
           <div className="card p-4 xl:col-span-2">
-            <h3 className="text-[13px] font-bold text-corp">30 Günlük Şehir Talep Eğrisi</h3>
+            <h3 className="text-[13px] font-bold text-corp">30 Günlük Etkinlik Takvimi</h3>
             <p className="mb-3 mt-0.5 text-[11.5px] text-text-muted">
               {hasAttendanceData ? 'Gün bazında beklenen toplam katılım' : 'Günlük etkinlik sayısı'}
             </p>
@@ -247,7 +246,7 @@ export default function CityIntelligence() {
           </div>
         </div>
 
-        {/* Aktif Mekânlar & Ticari Fırsatlar */}
+        {/* Mekânlar ve öncelikli etkinlikler */}
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
           <div className="card p-4">
             <h3 className="mb-2.5 text-[13px] font-bold text-corp">En Aktif Mekânlar</h3>
@@ -278,7 +277,7 @@ export default function CityIntelligence() {
           </div>
 
           <div className="card p-4">
-            <h3 className="mb-2.5 text-[13px] font-bold text-corp">Öne Çıkan Şehir Fırsatları</h3>
+            <h3 className="mb-2.5 text-[13px] font-bold text-corp">Öncelikli Etkinlikler</h3>
             <div className="space-y-1.5">
               {[...events]
                 .map((e) => ({

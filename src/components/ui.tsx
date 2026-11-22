@@ -25,12 +25,12 @@ export function PageHeader({
 }) {
   return (
     <div className="sticky top-0 z-20 border-b border-[#e2e8f0] bg-white">
-      <div className="flex items-center justify-between gap-4 px-6 py-3">
+      <div className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">
         <div className="min-w-0">
           <h1 className="text-[15px] font-bold tracking-tight text-[#0f172a]">{title}</h1>
-          {subtitle && <p className="mt-0.5 truncate text-[12px] text-[#64748b]">{subtitle}</p>}
+          {subtitle && <p className="mt-0.5 text-[12px] text-[#64748b] sm:truncate">{subtitle}</p>}
         </div>
-        {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
+        {actions && <div className="flex max-w-full flex-wrap items-center gap-2 sm:shrink-0">{actions}</div>}
       </div>
     </div>
   )

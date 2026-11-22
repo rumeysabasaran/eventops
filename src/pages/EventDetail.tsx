@@ -53,7 +53,7 @@ export default function EventDetail() {
       <div className="p-6">
         <EmptyState
           title={loading ? 'Etkinlik yükleniyor…' : 'Etkinlik bulunamadı'}
-          hint={loading ? 'Doğrulanmış kayıtlar alınıyor.' : 'Kayıt veri hattından kaldırılmış olabilir.'}
+          hint={loading ? 'Doğrulanmış kayıtlar alınıyor.' : 'Kayıt kaldırılmış veya tarihi geçmiş olabilir.'}
         />
       </div>
     )
@@ -86,7 +86,7 @@ export default function EventDetail() {
                   <div className="flex flex-wrap items-center gap-2">
                     <CategoryBadge category={event.category} />
                     <span className="text-[11.5px] font-medium text-text-muted">
-                      {event.ticketed === null ? 'Giriş bilgisi yok' : event.ticketed ? `Ücretli${event.price ? ` · ${event.price}` : ''}` : 'Ücretsiz'}
+                      {event.ticketed === null ? 'Giriş bilgisi yok' : event.ticketed ? `Bilet bağlantısı var${event.price ? ` · ${event.price}` : ''}` : 'Ücretsiz'}
                     </span>
                     {event.eventStatus && event.eventStatus !== 'scheduled' && (
                       <span className="rounded-badge border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-wide text-amber-800">
@@ -108,7 +108,7 @@ export default function EventDetail() {
                 </div>
                 <div className="flex flex-col items-center gap-1 shrink-0">
                   <ScoreRing score={event.impactScore} size={76} />
-                  <span className="label-xs">Etki Skoru</span>
+                  <span className="label-xs">Öncelik Skoru</span>
                 </div>
               </div>
             </div>
@@ -116,14 +116,14 @@ export default function EventDetail() {
             <div className="card p-4">
               <div className="flex items-center gap-2">
                 <ClipboardList size={16} className="text-brand" />
-                <h3 className="text-[13.5px] font-bold text-corp">Operasyonel İçgörü & Önerilen Aksiyon</h3>
+                <h3 className="text-[13.5px] font-bold text-corp">Operasyon Önerisi</h3>
               </div>
               <p className="mt-2 text-[12.5px] leading-relaxed text-text-secondary">{generateInsight(event)}</p>
 
               <div className="mt-3.5 grid grid-cols-1 gap-3 md:grid-cols-2">
                 <div className={`rounded-lg border p-3 ${hasScooter ? 'border-emerald-200 bg-emerald-50/40' : 'border-[#e2e8f0] bg-[#f8fafc] opacity-70'}`}>
                   <div className="flex items-center gap-2 text-[12px] font-bold text-[#065f46]">
-                    <Zap size={15} /> Filo & Mobilite Aksiyonu
+                    <Zap size={15} /> Scooter Filosu
                     {!hasScooter && <span className="ml-auto text-[10px] font-semibold uppercase text-[#94a3b8]">{event.city} içinde yok</span>}
                   </div>
                   <p className="mt-1.5 text-[12px] leading-relaxed text-[#0f172a]">
@@ -132,7 +132,7 @@ export default function EventDetail() {
                 </div>
                 <div className={`rounded-lg border p-3 ${hasParking ? 'border-slate-200 bg-slate-50/60' : 'border-[#e2e8f0] bg-[#f8fafc] opacity-70'}`}>
                   <div className="flex items-center gap-2 text-[12px] font-bold text-[#334155]">
-                    <SquareParking size={15} /> Otopark Yönetim Aksiyonu
+                    <SquareParking size={15} /> Otopark
                     {!hasParking && <span className="ml-auto text-[10px] font-semibold uppercase text-[#94a3b8]">{event.city} içinde yok</span>}
                   </div>
                   <p className="mt-1.5 text-[12px] leading-relaxed text-[#0f172a]">
@@ -144,7 +144,7 @@ export default function EventDetail() {
 
             <div className="card overflow-hidden">
               <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
-                <h3 className="text-[13px] font-bold text-corp">Mekân Konumu</h3>
+                <h3 className="text-[13px] font-bold text-corp">Konum</h3>
                 <span className="flex items-center gap-1.5 text-[11.5px] text-text-muted">
                   <MapPin size={13} className="text-brand" /> {event.address}
                 </span>
@@ -184,7 +184,7 @@ export default function EventDetail() {
 
           <div className="space-y-4">
             <div className="card p-4">
-              <h3 className="mb-2 text-[13px] font-bold text-corp">Etkinlik Parametreleri</h3>
+              <h3 className="mb-2 text-[13px] font-bold text-corp">Etkinlik Bilgileri</h3>
               <div className="divide-y divide-border">
                 <InfoRow icon={<CalendarDays size={14} />} label="Tarih" value={formatDateLong(event.date)} />
                 <InfoRow
@@ -204,7 +204,7 @@ export default function EventDetail() {
                 <InfoRow
                   icon={<Ticket size={14} />}
                   label="Giriş"
-                  value={event.ticketed === null ? UNAVAILABLE : event.ticketed ? (event.price ?? 'Ücretli') : 'Ücretsiz'}
+                  value={event.ticketed === null ? UNAVAILABLE : event.ticketed ? (event.price ?? 'Bilet bağlantısı var') : 'Ücretsiz'}
                 />
                 <InfoRow icon={<Building size={14} />} label="Organizatör" value={event.organizer} />
                 <InfoRow
@@ -243,7 +243,7 @@ export default function EventDetail() {
             </div>
 
             <div className="card p-4">
-              <h3 className="mb-2 text-[13px] font-bold text-corp">Hizmet Kapsamı — {event.city}</h3>
+              <h3 className="mb-2 text-[13px] font-bold text-corp">{event.city} Hizmetleri</h3>
               <div className="space-y-2">
                 <div className="flex items-center justify-between rounded-lg border border-border bg-surface-secondary px-3 py-2">
                   <span className="flex items-center gap-2 text-[12px] font-semibold text-corp">

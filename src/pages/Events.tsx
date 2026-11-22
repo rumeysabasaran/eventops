@@ -62,7 +62,7 @@ export default function Events() {
         {/* Filtre ve Arama Alanı */}
         <div className="mb-4 rounded-xl border border-border bg-white p-3.5 shadow-sm">
           <div className="flex flex-wrap items-center gap-2.5">
-            <div className="relative min-w-[260px] flex-1">
+            <div className="relative min-w-full flex-1 sm:min-w-[260px]">
               <Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-light" />
               <input
                 value={query}
@@ -103,7 +103,7 @@ export default function Events() {
                 <span className="text-[11.5px] font-medium text-text-muted">Sıralama:</span>
                 <select value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className="select-corp">
                   <option value="date">Tarihe Göre</option>
-                  <option value="impact">Etki Skoruna Göre</option>
+                  <option value="impact">Öncelik Skoruna Göre</option>
                 </select>
               </div>
             </div>
