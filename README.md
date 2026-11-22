@@ -2,6 +2,8 @@
 
 Şehirlerdeki konser, maç, festival ve fuarları kamuya açık kaynaklardan toplayan, temizleyen ve **mikromobilite ile otopark operasyonları için önceliklendirilmiş aksiyon önerilerine** dönüştüren full-stack web uygulaması.
 
+**[Canlı demoyu aç](https://rumeysabasaran.github.io/eventops-demo/)** · Salt okunur sürüm, 23 Kasım 2026 tarihli veri kopyasını kullanır.
+
 ![Genel bakış ekranı](docs/dashboard.jpg)
 
 ## Çözdüğü problem
