@@ -24,7 +24,7 @@ export const EVENT_STATUS_LABEL: Record<string, string> = {
 }
 
 export const IMPACT_FILTER_LABEL: Record<'all' | ImpactLevel, string> = {
-  all: 'Tüm etki düzeyleri',
+  all: 'Tüm öncelikler',
   critical: 'Çok yüksek',
   high: 'Yüksek',
   medium: 'Orta',

@@ -52,7 +52,10 @@ export const generateInsight = (e: CityEvent): string => {
   const parts: string[] = []
 
   if (e.eventStatus === 'cancelled') {
-    return 'Kaynak bu etkinliği İPTAL olarak işaretlemiş. Operasyonel aksiyon gerekmez; ayrılmış kapasite serbest bırakılabilir.'
+    return 'Kaynak bu etkinliği İPTAL olarak işaretlemiş. Aksiyon gerekmez; ayrılmış kapasite serbest bırakılabilir.'
+  }
+  if (!where) {
+    return `Kaynak mekân bilgisini yayımlamamış, bu yüzden ${e.city} için konuma bağlı bir saha önerisi üretilmedi. Mekân teyit edildiğinde öneri otomatik olarak oluşur.`
   }
   if (e.eventStatus === 'postponed') {
     parts.push('Not: kaynak bu etkinliği ERTELENDİ olarak işaretlemiş — kaynak taahhüdünden önce yeni tarihi doğrulayın.')
@@ -100,7 +103,7 @@ export const generateInsight = (e: CityEvent): string => {
   }
 
   if (parts.length === 1) {
-    parts.push('Beklenen operasyonel etki sınırlı; filo veya kapasite aksiyonu gerekmez.')
+    parts.push('Beklenen etki sınırlı; filo veya kapasite aksiyonu gerekmez.')
   }
 
   return parts.join(' ')
@@ -161,7 +164,8 @@ export function analyzeRealEvent(e: RealEventInput): RealEventAnalysis {
   const bump = (l: ImpactLevel, up: boolean): ImpactLevel => {
     const order: ImpactLevel[] = ['low', 'medium', 'high', 'critical']
     const i = order.indexOf(l)
-    return order[Math.max(0, Math.min(order.length - 1, i + (up ? 1 : 0)))]
+    // Kategori etkisi seviyeyi en fazla "yüksek"e taşır; "çok yüksek" yalnızca skorla kazanılır.
+    return order[i + (up && i < 2 ? 1 : 0)]
   }
 
   return {
@@ -175,14 +179,15 @@ export const recommendedAction = (e: CityEvent, service: ServiceType): string =>
   const level = service === 'parking' ? e.parkingImpact : e.scooterDemand
   const hasTime = e.startTime !== '—'
   const where = e.venue !== UNAVAILABLE ? e.venue : null
+  if (!where && LEVEL_ORDER[level] >= 2) {
+    return 'Mekân kaynakta yayımlanmamış. Saha aksiyonu planlamadan önce konumu teyit edin.'
+  }
   if (service === 'scooter') {
     switch (level) {
       case 'critical':
-        return where
-          ? `${where} yakınına ${hasTime ? `${e.startTime} itibarıyla` : ''} ek filo gönderin; etkinlik sonrası dengeleme ekibi atayın.`
-          : `Kaynak yer yayımlamamış; ${e.city} genelinde ${hasTime ? `${e.startTime} itibarıyla` : ''} ek filo hazırlayın.`
+        return `${where} yakınına ${hasTime ? `${e.startTime} itibarıyla ` : ''}ek filo gönderin; etkinlik sonrası dengeleme ekibi atayın.`
       case 'high':
-        return `Scooterları ${hasTime ? `${e.startTime} saatinde 60–90 dk önce` : 'etkinlikten önce'} ${where ? `${where} çevresine` : 'şehir içinde'} kaydırın.`
+        return `Scooterları ${hasTime ? `${e.startTime} saatinden 60–90 dk önce` : 'etkinlikten önce'} ${where} çevresine kaydırın.`
       case 'medium':
         return '800 m içindeki müsaitliği izleyin; doluluk %70’i geçerse takviye edin.'
       default:
@@ -191,11 +196,9 @@ export const recommendedAction = (e: CityEvent, service: ServiceType): string =>
   }
   switch (level) {
     case 'critical':
-      return where
-        ? `Etkinlik tarifesi ve ön rezervasyonu açın; ${where} yakınında yedek lot kullanın.`
-        : `Etkinlik tarifesi ve ön rezervasyonu açın; kaynak yer yayımlamamış, ${e.city} genelinde yedek kapasite hazırlayın.`
+      return `Etkinlik tarifesi ve ön rezervasyonu açın; ${where} yakınında yedek lot kullanın.`
     case 'high':
-      return `Kadroyu artırın ve dinamik tarifeyi ${hasTime ? `${e.startTime} itibarıyla` : ''} etkinleştirin.`
+      return `Kadroyu artırın ve dinamik tarifeyi ${hasTime ? `${e.startTime} itibarıyla ` : ''}etkinleştirin.`
     case 'medium':
       return 'Doluluğu izleyin; standart kadro yeterli.'
     default:

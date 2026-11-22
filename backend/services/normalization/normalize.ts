@@ -16,7 +16,7 @@ export const CATEGORIES = [
 ] as const
 
 const CATEGORY_RULES: Array<[RegExp, string]> = [
-  [/maraton|koşu|kosu|yarış|yaris|\brun\b|bisiklet|triatlon/i, 'Marathon'],
+  [/maraton|(?<!\p{L})ko[sş]u(su|ları|lari)?(?!\p{L})|yar[ıi][sş](?!ma)|(?<!\p{L})run(?!\p{L})|bisiklet|triatlon/iu, 'Marathon'],
   [/festival|şenlik|senlik|\bfest\b/i, 'Festival'],
   [/tiyatro|theatre|theater|opera|bale|müzikal|muzikal|stand-?up/i, 'Theater'],
   [
@@ -44,7 +44,12 @@ const SOURCE_CATEGORY_RULES: Array<[RegExp, string]> = [
   [/\b(miting|yürüyüş|yuruyus|siyasi|political)\b/i, 'Community'],
 ]
 
+/** "Fikir maratonu", "hackathon" gibi başlıklar spor değil, salon içi etkinliktir. */
+const NON_SPORT_MARATHON_RE =
+  /(fikir|kitap|okuma|kod|kodlama|yazılım|yazilim|girişim|girisim|proje|inovasyon|tasarım|tasarim|film|bilgi)\s+maraton|hackathon|ideathon|datathon/i
+
 export function normalizeCategory(categoryText: string | null, title: string | null): string {
+  if (title && NON_SPORT_MARATHON_RE.test(title)) return 'Conference'
   if (categoryText) {
     for (const [re, cat] of SOURCE_CATEGORY_RULES) {
       if (re.test(categoryText)) return cat
