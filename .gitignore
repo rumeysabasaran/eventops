@@ -33,3 +33,6 @@ public/demo-data
 *.njsproj
 *.sln
 *.sw?
+
+# Local presentation notes
+PITCH_DECK.md
