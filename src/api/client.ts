@@ -2,6 +2,7 @@ import type { CityEvent, DataSource, ScraperRun, EventCategory } from '../types'
 import { analyzeRealEvent } from '../lib/impact'
 import { UNAVAILABLE } from '../lib/labels'
 import { isUpcomingStart } from '../lib/format'
+import { setFrozenNow } from '../lib/clock'
 
 /**
  * Client for the real ingestion backend (/api). Maps API rows into the
@@ -93,11 +94,38 @@ const SOURCE_TYPE_LABEL: Record<string, string> = {
   other: 'Diğer kamu kaynağı',
 }
 
+export const IS_DEMO = import.meta.env.MODE === 'demo'
+
+const DEMO_FILES: Record<string, string> = {
+  '/api/events?verified=true': 'events.json',
+  '/api/sources': 'sources.json',
+  '/api/scrape-runs?limit=100': 'runs.json',
+}
+
+let demoClock: Promise<void> | null = null
+
+/** Demo saatini veri anlık görüntüsünün tarihine sabitler. */
+function ensureDemoClock(): Promise<void> {
+  demoClock ??= fetch(`${import.meta.env.BASE_URL}demo-data/meta.json`)
+    .then((r) => {
+      if (!r.ok) throw new Error(`demo verisi → HTTP ${r.status}`)
+      return r.json() as Promise<{ snapshotAt: string }>
+    })
+    .then((m) => setFrozenNow(m.snapshotAt))
+  return demoClock
+}
+
 async function getJson<T>(path: string): Promise<T> {
-  const res = await fetch(path, { headers: { accept: 'application/json' } })
+  if (IS_DEMO) await ensureDemoClock()
+  const url = IS_DEMO ? `${import.meta.env.BASE_URL}demo-data/${DEMO_FILES[path]}` : path
+  const res = await fetch(url, { headers: { accept: 'application/json' } })
   if (!res.ok) throw new Error(`API ${path} → HTTP ${res.status}`)
   return (await res.json()) as T
 }
+
+/** Bazı belediye sayfalarında açıklama yerine site menüsü geliyor; bunu göstermeyiz. */
+const cleanDescription = (d: string | null): string | null =>
+  d && !/e-?belediye|e-?işlem/i.test(d) ? d : null
 
 export function mapApiEvent(e: ApiEvent): CityEvent {
   const analysis = analyzeRealEvent({
@@ -119,7 +147,7 @@ export function mapApiEvent(e: ApiEvent): CityEvent {
     address: e.address ?? UNAVAILABLE,
     date: e.start_time ? e.start_time.slice(0, 10) : '',
     startTime: e.start_time && e.date_precision === 'datetime' ? e.start_time.slice(11, 16) : '—',
-    endTime: e.end_time ? e.end_time.slice(11, 16) : null,
+    endTime: e.end_time && e.end_time !== e.start_time ? e.end_time.slice(11, 16) : null,
     attendance: null, // never estimated at ingestion; only real source-provided values
     ticketed: e.ticket_url ? true : null,
     price: null,
@@ -133,7 +161,7 @@ export function mapApiEvent(e: ApiEvent): CityEvent {
     lng: e.location_precision === 'source' || e.location_precision === 'geocoded' ? e.longitude : null,
     locationPrecision:
       e.location_precision === 'source' || e.location_precision === 'geocoded' ? e.location_precision : undefined,
-    description: e.description ?? 'Kaynak açıklama yayımlamamış.',
+    description: cleanDescription(e.description) ?? 'Kaynak açıklama yayımlamamış.',
     eventStatus: e.status,
     sourceStatus: e.source_status,
     sourceConfidence: e.source_confidence,

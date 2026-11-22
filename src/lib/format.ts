@@ -1,5 +1,6 @@
-import { format, parseISO, formatDistanceToNowStrict } from 'date-fns'
+import { format, parseISO, formatDistanceStrict } from 'date-fns'
 import { tr } from 'date-fns/locale'
+import { now } from './clock'
 
 export const formatDate = (iso: string): string => format(parseISO(iso), 'EEE d MMM', { locale: tr })
 export const formatDateLong = (iso: string): string => format(parseISO(iso), 'EEEE, d MMMM yyyy', { locale: tr })
@@ -19,7 +20,12 @@ export function istanbulToday(): string {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
-  }).format(new Date())
+  }).format(now())
+}
+
+/** İstanbul takvimine göre bugünden `offset` gün sonrasının öğlesi. */
+export function istanbulDay(offset: number): Date {
+  return new Date(Date.parse(`${istanbulToday()}T12:00:00+03:00`) + offset * 86_400_000)
 }
 
 /** Başlangıç tarihi bugün veya sonrası (İstanbul takvimi). */
@@ -45,4 +51,4 @@ export const formatAttendance = (n: number): string => {
 export const formatNumber = (n: number): string => n.toLocaleString('tr-TR')
 
 export const timeAgo = (iso: string): string =>
-  `${formatDistanceToNowStrict(parseISO(iso), { locale: tr })} önce`
+  `${formatDistanceStrict(parseISO(iso), now(), { locale: tr })} önce`

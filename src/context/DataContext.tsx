@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { CityEvent, DataSource, ScraperRun } from '../types'
-import { fetchEvents, fetchSources, fetchRuns } from '../api/client'
+import { fetchEvents, fetchSources, fetchRuns, IS_DEMO } from '../api/client'
 import { isUpcomingStart } from '../lib/format'
 
 interface DataContextValue {
@@ -41,7 +41,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
         setSources([])
         setRuns([])
         setError(
-          `API’ye ulaşılamıyor (${err.message}). Arka ucu başlatın: npm run server`,
+          IS_DEMO
+            ? `Demo verisi yüklenemedi (${err.message}).`
+            : `API’ye ulaşılamıyor (${err.message}). Arka ucu başlatın: npm run server`,
         )
         setLoading(false)
       })
@@ -51,6 +53,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }, [reloadKey])
 
   useEffect(() => {
+    if (IS_DEMO) return
     const id = window.setInterval(() => {
       Promise.all([fetchEvents(), fetchSources(), fetchRuns()])
         .then(([e, s, r]) => {

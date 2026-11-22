@@ -8,6 +8,8 @@
     "build": "tsc -b && npm run typecheck:backend && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "demo:export": "tsx backend/jobs/exportDemo.ts",
+    "build:demo": "npm run demo:export && tsc -b && vite build --mode demo",
     "server": "tsx backend/server.ts",
     "scrape": "tsx backend/jobs/runAll.ts",
     "geocode": "tsx backend/jobs/geocode.ts",
