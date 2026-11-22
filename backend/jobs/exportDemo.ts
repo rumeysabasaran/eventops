@@ -17,9 +17,12 @@ async function get(path: string): Promise<Row[]> {
   return (await res.json()) as Row[]
 }
 
+const PHONE_RE = /(?:\+?90[\s.-]?)?\(?0?[2-5]\d{2}\)?[\s.-]?\d{3}[\s.-]?\d{2}[\s.-]?\d{2}/g
+
 const shorten = (v: unknown): string | null => {
   if (typeof v !== 'string' || !v) return null
-  return v.length > 220 ? `${v.slice(0, 217).trimEnd()}…` : v
+  const text = v.replace(PHONE_RE, '[iletişim bilgisi kaynakta]')
+  return text.length > 220 ? `${text.slice(0, 217).trimEnd()}…` : text
 }
 
 async function main(): Promise<void> {
