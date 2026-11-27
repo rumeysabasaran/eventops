@@ -8,7 +8,7 @@ EventOps; belediye takvimlerini, bilet platformlarını, spor federasyonlarını
 
 ![Genel bakış ekranı](docs/dashboard.jpg)
 
-| 10 şehir | 22 aktif kaynak | 426 doğrulanmış etkinlik | 58 çok kaynaklı kayıt |
+| 10 şehir | 22 aktif kaynak | 425 doğrulanmış etkinlik | 58 çok kaynaklı kayıt |
 | :---: | :---: | :---: | :---: |
 
 *Rakamlar demodaki veri kopyasına aittir.*
