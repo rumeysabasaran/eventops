@@ -106,7 +106,7 @@ let demoClock: Promise<void> | null = null
 
 /** Demo saatini veri anlık görüntüsünün tarihine sabitler. */
 function ensureDemoClock(): Promise<void> {
-  demoClock ??= fetch(`${import.meta.env.BASE_URL}demo-data/meta.json`)
+  demoClock ??= fetch(`${import.meta.env.BASE_URL}demo-data/meta.json`, { cache: 'no-cache' })
     .then((r) => {
       if (!r.ok) throw new Error(`demo verisi → HTTP ${r.status}`)
       return r.json() as Promise<{ snapshotAt: string }>
@@ -118,7 +118,8 @@ function ensureDemoClock(): Promise<void> {
 async function getJson<T>(path: string): Promise<T> {
   if (IS_DEMO) await ensureDemoClock()
   const url = IS_DEMO ? `${import.meta.env.BASE_URL}demo-data/${DEMO_FILES[path]}` : path
-  const res = await fetch(url, { headers: { accept: 'application/json' } })
+  // Demo verisi yeniden yayınlandığında tarayıcı önbelleğindeki eski kopya gösterilmesin.
+  const res = await fetch(url, { headers: { accept: 'application/json' }, cache: IS_DEMO ? 'no-cache' : 'default' })
   if (!res.ok) throw new Error(`API ${path} → HTTP ${res.status}`)
   return (await res.json()) as T
 }
