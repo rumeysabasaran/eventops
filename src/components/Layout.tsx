@@ -67,7 +67,7 @@ export default function Layout() {
           <BrandMark />
           <div className="min-w-0 flex-1">
             <div className="text-[13.5px] font-bold leading-tight tracking-tight text-white">EventOps</div>
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-[#10b981]">Etkinlik Planlama</div>
+            <div className="text-[10px] font-semibold uppercase tracking-wide text-[#10b981] lg:whitespace-nowrap">Etkinlik bazlı operasyon</div>
           </div>
           <button aria-label="Menüyü kapat" onClick={() => setMenuOpen(false)} className="text-slate-400 lg:hidden">
             <X size={18} />
