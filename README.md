@@ -8,7 +8,7 @@ EventOps; belediye takvimlerini, bilet platformlarını, spor federasyonlarını
 
 ![Genel bakış ekranı](docs/dashboard.jpg)
 
-| 10 şehir | 22 aktif kaynak | 425 doğrulanmış etkinlik | 58 çok kaynaklı kayıt |
+| 10 şehir | 22 aktif kaynak | 425 doğrulanmış etkinlik | 30 kaynaklar arası eşleşme |
 | :---: | :---: | :---: | :---: |
 
 *Rakamlar demodaki veri kopyasına aittir.*
@@ -58,7 +58,7 @@ Bu karşılaştırma, aynı türdeki etkinliklerde önceden hazırlık yapılan 
 - **Adaptör mimarisi:** Belediye, bilet platformu, spor federasyonu, mekân, organizatör ve yerel rehber kaynakları için ortak `EventSourceAdapter` sınıfı. Yeni kaynak eklemek tek bir sınıf ve bir kayıt satırıdır.
 - **Zamanlayıcı:** Her kaynak kendi aralığında çalışır, günde bir kez tüm kaynaklar baştan taranır, etkinlikler 30 dakikada bir yeniden doğrulanır. Çökmüş bir kaynak diğerlerini durdurmaz.
 - **Türkçe veri işleme:** `03 - 05 Eylül 2026`, `28.08.2026 | 10:00` gibi biçimleri ayrıştırma, İstanbul saat dilimiyle çalışma.
-- **Tekilleştirme:** Başlık, tarih, şehir ve mekân benzerliğiyle kaynaklar arası eşleştirme. Demoda 58 etkinlik birden fazla kaynaktan birleştirilmiştir.
+- **Tekilleştirme:** Başlık, tarih, şehir ve mekân benzerliğiyle kaynaklar arası eşleştirme. Demoda 30 etkinlik farklı kaynaklardan gelen kayıtlar birleştirilerek tek etkinliğe indirgenmiştir.
 - **Değişiklik takibi:** Kaynaktan kaybolan, iptal edilen veya tarihi değişen etkinliklerin geçmişi saklanır.
 - **Konum eşleştirme:** Mekân adları OpenStreetMap Nominatim ile koordinata çevrilir ve sonuçlar önbelleğe alınır.
 - **Sorumlu veri toplama:** `robots.txt` kontrolü, Nominatim kullanım kurallarına uygun istek aralığı ve kaynak bazlı hata kaydı.
